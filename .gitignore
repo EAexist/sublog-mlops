@@ -1,0 +1,36 @@
+# Env and secrets
+.env
+*.env.local
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Outputs and data (keep structure via .gitkeep)
+outputs/runs/*
+!outputs/runs/.gitkeep
+data/datasets/*
+!data/datasets/.gitkeep
+data/prompts/*
+!data/prompts/.gitkeep
+
+# MLflow
+mlruns/
+
+# Airflow
+airflow_home/
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
