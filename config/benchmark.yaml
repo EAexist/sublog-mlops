@@ -1,0 +1,29 @@
+# Run settings: multi-task (task = prompt), oracle. No weight-sum; report accuracy (and latency when enabled).
+# metric_weights kept for optional future use; not used for scoring — developer chooses model from report.
+
+oracle_model_id: gpt-4o
+metric_weights:
+  correctness: 0.60
+  latency: 0.25
+  cost: 0.15
+output_dir: outputs/runs
+mlflow_experiment_name: llm-benchmark
+
+# Tasks: each task = one prompt/domain. task_type: task_a (categorize SubscriptionEventType) or task_b (extract regexes)
+tasks:
+  - task_id: task_a_categorize
+    domain: subscription_email
+    n_samples: 50
+    weight: 1.0
+    task_type: task_a
+  - task_id: task_b_extract
+    domain: subscription_email
+    n_samples: 30
+    weight: 0.8
+    task_type: task_b
+
+# Dataset publishing settings
+dataset_publishing:
+  max_versions: 10          # versions kept in versions/ before archiving
+  submodule_path: datasets  # relative path to submodule root
+  remote_branch: main       # branch to push to in submodule remote

@@ -1,0 +1,39 @@
+# --- 1. Python Essentials ---
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.venv/
+**/venv/
+**/env/
+**/.pytest_cache/
+**/.tox/
+**/.nox/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# --- 2. Build & Distribution ---
+**/dist/
+**/build/
+**/*.egg-info/
+**/*.spec
+
+# --- 3. Data & AI Orchestration (Crucial for Token Savings) ---
+**/data/            # Exclude large datasets
+**/logs/            # Exclude massive log files
+**/outputs/         # Exclude AI generated runs/results
+**/.airflow/        # Local airflow run data
+**/airflow_home/    # Local Airflow DB/metadata
+**/mlruns/          # MLflow artifact store
+**/db/              # Local SQLite or DB files
+
+# --- 4. Secrets & Environment ---
+**/.env
+**/secrets.yaml
+
+# --- 5. Cursor/IDE Artifacts ---
+**/.cursor/cache/
+**/.cursor/index/
+**/.vscode/
+**/.idea/
+**/.git/
+**/*.log
