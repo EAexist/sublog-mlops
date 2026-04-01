@@ -1,6 +1,7 @@
 # Build BenchmarkResult from per_task_metrics. No weight-sum; human chooses model from report.
 
 import logging
+
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)

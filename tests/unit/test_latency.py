@@ -1,7 +1,6 @@
 # Unit tests for benchmark/latency (TODO module; not used in main pipeline)
 
-import pytest
-from llm_benchmark.benchmark.latency import compute_latency_ms, add_latency_to_metrics
+from llm_benchmark.benchmark.latency import add_latency_to_metrics, compute_latency_ms
 
 
 def test_compute_latency_ms_empty() -> None:

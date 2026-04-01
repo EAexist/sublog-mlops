@@ -7,9 +7,9 @@ before publishing to the submodule.
 
 import logging
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
-from .schema import PromptVersion
+from datasets_shared.schema import PromptVersion
 
 logger = logging.getLogger(__name__)
 
@@ -41,19 +41,19 @@ def validate_dataset(
     # Check if file exists
     if not dataset_path.exists():
         raise DatasetValidationError(f"Dataset file not found: {dataset_path}")
-    
+
     # TODO: Implement schema validation
     # TODO: Implement content checks (non-empty, expected fields)
     # TODO: Verify sample count matches expected_samples
-    
+
     logger.info(f"Validating dataset: {dataset_path}")
     logger.info(f"Expected samples: {expected_samples}")
-    
+
     # Placeholder implementation
     return True
 
 
-def validate_sample_format(sample: Dict[str, Any]) -> bool:
+def validate_sample_format(sample: dict[str, Any]) -> bool:
     """
     Validate individual sample format.
     

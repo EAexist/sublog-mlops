@@ -6,19 +6,20 @@
 # Python
 __pycache__/
 *.py[cod]
-.venv/
+*.venv/
 venv/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
 dist/
 build/
+.pytest_cache
 
 # Outputs and data (keep structure via .gitkeep)
 outputs/runs/*
 !outputs/runs/.gitkeep
-data/datasets/*
-!data/datasets/.gitkeep
+data/dataset/*
+!data/dataset/.gitkeep
 data/prompts/*
 !data/prompts/.gitkeep
 
@@ -34,3 +35,8 @@ logs/
 .vscode/
 *.swp
 *.swo
+.cursor/
+
+.codeiumignore
+
+*deprecated*

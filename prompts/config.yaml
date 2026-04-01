@@ -1,0 +1,36 @@
+# Prompt Registry Configuration
+
+# HuggingFace repository settings
+registry:
+  repo_id: "your-org/prompt-registry"  # Update with your HuggingFace repo
+  local_path: "./prompt_registry_cache"  # Local cache for registry
+
+# Version management settings
+versioning:
+  max_versions: 10  # Maximum versions to keep in versions/ before archiving
+  version_format: "semantic"  # semantic (X.Y.Z) or date-based
+  
+# Publishing settings
+publishing:
+  auto_archive: true  # Automatically archive old versions when publishing
+  push_to_registry: false  # Auto-push to HuggingFace on new versions
+  commit_message_template: "Add prompt version {version}: {changelog}"
+
+# Validation settings
+validation:
+  require_changelog: true  # Require changelog for new versions
+  validate_placeholders: true  # Check for proper prompt placeholders
+  max_prompt_length: 10000  # Maximum character limit for prompts
+
+# Task configuration
+tasks:
+  required_fields:
+    - task_id
+    - name
+    - description
+    - prompt
+    - version
+    - created_at
+    - author
+  
+  placeholder_format: "{field_name}"  # Format for prompt placeholders

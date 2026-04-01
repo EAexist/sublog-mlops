@@ -1,35 +1,35 @@
 import uuid
-from typing import List
-from llm_benchmark.dataset.schema import Dataset, Sample, Message, Payload, Header, SubscriptionEventType
+
+from datasets_shared.schema import (
+    Dataset,
+    Sample,
+    SubscriptionEventType,
+)
+
 
 def create_mock_dataset(num_samples: int = 1) -> Dataset:
     """
     Creates a mock Dataset object for testing purposes.
     """
-    samples: List[Sample] = []
+    samples: list[Sample] = []
     for i in range(num_samples):
-        message_id = str(uuid.uuid4())
         subject = f"Test Subject {i}"
         snippet = f"Test Snippet {i}"
-        
-        message = Message(
-            id=message_id,
-            snippet=snippet,
-            payload=Payload(
-                headers=[
-                    Header(name="From", value="test@example.com"),
-                    Header(name="Subject", value=subject),
-                ]
-            )
-        )
-        
+
         sample = Sample(
-            message=message,
+            id=str(uuid.uuid4()),
+            company_id="test_company",
+            template_id="test_template",
+            subject=subject,
+            snippet=snippet,
             subscription_event_type=SubscriptionEventType.MONTHLY_PAYMENT,
-            subject_regex=f"^{subject}$",
-            snippet_regex=f"^{snippet}$",
-            metadata={"test_run": True}
+            metadata={
+                "test_run": True,
+                "subject_regex": f"^{subject}$",
+                "snippet_regex": f"^{snippet}$",
+                "from_address": "test@example.com",
+            },
         )
         samples.append(sample)
-        
+
     return Dataset(samples=samples, content_hash="mock_hash")

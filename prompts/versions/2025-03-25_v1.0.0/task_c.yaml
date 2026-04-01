@@ -1,0 +1,12 @@
+task_id: task_c
+name: "Summarization Task"
+description: "Generate concise summaries of longer texts"
+prompt: |
+  You are an expert summarizer. Create a concise summary of the following text, capturing the main points while maintaining accuracy.
+  
+  Text to summarize: {input_text}
+  
+  Summary:
+version: "1.0.0"
+created_at: "2025-03-25T15:00:00Z"
+author: "prompt_engineer"

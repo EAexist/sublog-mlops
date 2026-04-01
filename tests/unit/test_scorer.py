@@ -1,7 +1,7 @@
 # Unit tests for benchmark/scorer
 
 import pytest
-from llm_benchmark.benchmark.scorer import build_benchmark_result, BenchmarkResult
+from llm_benchmark.benchmark.scorer import build_benchmark_result
 
 
 def test_build_benchmark_result_empty() -> None:

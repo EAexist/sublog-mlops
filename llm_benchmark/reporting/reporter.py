@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+
 from llm_benchmark.benchmark.scorer import BenchmarkResult
 
 logger = logging.getLogger(__name__)

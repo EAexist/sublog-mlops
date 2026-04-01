@@ -1,24 +1,41 @@
 # Abstract LLMClient + FineTunableModel mixin (stub)
 
 from abc import ABC, abstractmethod
+from enum import Enum
+from typing import Any, Generic, TypeVar
+
+from datasets_shared.schema import Dataset
 from pydantic import BaseModel
 
-from llm_benchmark.dataset.schema import Dataset
+
+class ResponseFormat(Enum):
+    """Response format types for LLM calls."""
+    TEXT = "text"
+    JSON = "json"
 
 
-class LLMResponse(BaseModel):
+T = TypeVar("T", bound=BaseModel)
+
+
+class LLMResponse(BaseModel, Generic[T]):
     """Response from an LLM call."""
     content: str
     prompt_tokens: int
     completion_tokens: int
     latency_ms: float
+    parsed_data: T | None = None  # Parsed data when response_model is used
 
 
 class LLMClient(ABC):
     """Abstract base for all LLM clients."""
 
     @abstractmethod
-    async def complete(self, prompt: str) -> LLMResponse:
+    async def complete(
+        self,
+        prompt: str,
+        response_model: type[T],
+        config: dict[str, Any] | None = None
+    ) -> LLMResponse[T]:
         """Return completion for the given prompt."""
         ...
 

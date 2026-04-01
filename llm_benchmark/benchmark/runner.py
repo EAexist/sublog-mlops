@@ -1,12 +1,20 @@
 # Async fan-out: per-task benchmarks (all samples × all models per task), then aggregate
 
 import logging
-from llm_benchmark.dataset.schema import Dataset
-from llm_benchmark.models.registry import get_client
+
+from datasets_shared.schema import Dataset
+
 from llm_benchmark.config_loader import load_models_config
+from llm_benchmark.models.registry import get_client
 
 logger = logging.getLogger(__name__)
 
+
+from pydantic import BaseModel
+
+
+class SimpleResponse(BaseModel):
+    content: str
 
 async def run_benchmarks(
     dataset: Dataset,
@@ -28,7 +36,7 @@ async def run_benchmarks(
         raw_list: list[dict] = []
         for sample in dataset.samples:
             prompt = sample.get_prompt(task_type)
-            resp = await client.complete(prompt)
+            resp = await client.complete(prompt, SimpleResponse)
             raw_list.append({
                 "content": resp.content,
                 "prompt_tokens": resp.prompt_tokens,

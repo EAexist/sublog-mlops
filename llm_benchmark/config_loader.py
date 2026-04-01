@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -21,28 +22,35 @@ class ModelsConfig(BaseModel):
 
 class TaskConfig(BaseModel):
     task_id: str
-    n_samples: int
     task_type: str = "task_a"  # "task_a" (categorize) or "task_b" (extract regexes)
 
 
-class BenchmarkConfig(BaseModel):
+class DatasetConfig(BaseModel):
     oracle_model_id: str
     output_dir: str
     mlflow_experiment_name: str
+    n_templates_per_event: int
+    n_samples_per_template: int
     tasks: list[TaskConfig]
+    locales: list[str]
+    do_update_templates: bool
+    do_update_parameters: bool
+    hf_repo: str
 
 
 def load_models_config(path: Path | None = None) -> ModelsConfig:
     """Load and validate config/models.yaml."""
     import yaml
+
     path = path or Path("config/models.yaml")
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     return ModelsConfig.model_validate(data)
 
 
-def load_benchmark_config(path: Path | None = None) -> BenchmarkConfig:
-    """Load and validate config/benchmark.yaml."""
+def load_dataset_config(path: Path | None = None) -> DatasetConfig:
+    """Load and validate config/dataset.yaml."""
     import yaml
-    path = path or Path("config/benchmark.yaml")
+
+    path = path or Path("config/dataset.yaml")
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return BenchmarkConfig.model_validate(data)
+    return DatasetConfig.model_validate(data)

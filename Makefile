@@ -21,7 +21,13 @@ cli-run:
 	uv run python cli.py run
 
 test:
-	uv run pytest tests/ -v
+	uv run pytest tests/ -v -m "not integration" $(MARKER_FILTER) $(ARGS)
+
+test-only:
+	uv run pytest -v -k "$(NAME)" --log-cli-level=INFO
+
+test-int:
+	uv run pytest tests/ -v -k "test_generator_real" -m integration --log-cli-level=INFO
 
 lint:
 	uv run ruff check . && uv run ruff format --check .
@@ -34,3 +40,16 @@ typecheck:
 
 submodule-init:
 	git submodule update --init --recursive
+
+test-gen:
+	docker compose run --rm airflow-worker airflow tasks test benchmark_dag generate_dataset 2026-03-01
+
+local-gen:
+	@uv run python -c "\
+from dags.utils.logging import setup_litellm_logging; \
+from dags.benchmark_dag import _generate_and_push_dataset; \
+setup_litellm_logging(); \
+_generate_and_push_dataset( \
+    run_id='local_$(shell date +%Y%m%d_%H%M%S)', \
+    ti=type('MockTI', (), {'xcom_push': lambda self, k, v: print(f'Saved {k}={v}')})() \
+)"

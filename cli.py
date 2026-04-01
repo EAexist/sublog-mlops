@@ -1,6 +1,7 @@
 # Typer CLI — thin wrapper for local dev, calls same functions as DAG
 
 import logging
+
 import typer
 
 app = typer.Typer()

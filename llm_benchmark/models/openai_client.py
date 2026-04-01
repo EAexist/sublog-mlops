@@ -1,6 +1,8 @@
 # OpenAI LLM client
 
 import logging
+from typing import Any
+
 from llm_benchmark.models.base import LLMClient, LLMResponse
 
 logger = logging.getLogger(__name__)
@@ -13,10 +15,10 @@ class OpenAIClient(LLMClient):
         self.model_string = model_string
         self._api_key = api_key
 
-    async def complete(self, prompt: str) -> LLMResponse:
+    async def complete(self, prompt: str, response_model: type | None = None, config: dict[str, Any] | None = None) -> LLMResponse[Any]:
         """Call OpenAI completion API."""
         # TODO: use openai async client, return LLMResponse
-        return LLMResponse(
+        return LLMResponse[Any](
             content="",
             prompt_tokens=0,
             completion_tokens=0,

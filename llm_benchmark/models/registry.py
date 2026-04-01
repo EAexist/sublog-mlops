@@ -1,14 +1,14 @@
 # Loads models.yaml → instantiates correct client
 
 import logging
-from pathlib import Path
+from typing import Any
+
 from llm_benchmark.models.base import LLMClient
-from llm_benchmark.config_loader import load_models_config
 
 logger = logging.getLogger(__name__)
 
 
-def get_client(provider: str, model_string: str, **kwargs: object) -> LLMClient:
+def get_client(provider: str, model_string: str, **kwargs: Any) -> LLMClient:
     """Return LLMClient for provider (openai | google | ollama)."""
     if provider == "openai":
         from llm_benchmark.models.openai_client import OpenAIClient

@@ -5,7 +5,8 @@ import json
 import logging
 from typing import Any
 
-from llm_benchmark.dataset.schema import Dataset, Sample
+from datasets_shared.schema import Dataset, Sample
+
 from llm_benchmark.config_loader import ModelEntry
 
 logger = logging.getLogger(__name__)
@@ -31,8 +32,8 @@ def compute_correctness(
             parsed: Any = json.loads(model_stripped)
             if not isinstance(parsed, dict):
                 return 0.0
-            subj = parsed.get("subject_regex") == sample.subject_regex
-            snip = parsed.get("snippet_regex") == sample.snippet_regex
+            subj = parsed.get("subject_regex") == sample.metadata.get("subject_regex", "")
+            snip = parsed.get("snippet_regex") == sample.metadata.get("snippet_regex", "")
             return 1.0 if (subj and snip) else 0.0
         except (json.JSONDecodeError, TypeError):
             return 0.0
