@@ -1,0 +1,13 @@
+# Tasks: each task = one prompt/domain. task_type: task_a (categorize SubscriptionEventType) or task_b (extract regexes)
+tasks:
+  - task_id: task_a_categorize
+    domain: subscription_email
+    n_samples: 50
+    weight: 1.0
+    task_type: task_a
+  - task_id: task_b_extract
+    domain: subscription_email
+    n_samples: 30
+    weight: 0.8
+    task_type: task_b
+

@@ -1,0 +1,14 @@
+task_id: task_a
+name: "Text Classification Task"
+description: "Classify text into predefined categories"
+prompt: |
+  You are a text classification expert. Analyze the following text and classify it into one of these categories:
+  
+  Categories: [positive, negative, neutral]
+  
+  Text: {input_text}
+  
+  Respond with only the category name.
+version: "1.0.0"
+created_at: "2025-03-25T15:00:00Z"
+author: "prompt_engineer"
