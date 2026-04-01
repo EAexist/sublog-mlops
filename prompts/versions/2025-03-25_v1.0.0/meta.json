@@ -1,8 +1,0 @@
-{
-  "version": "1.0.0",
-  "created_at": "2025-03-25T15:00:00Z",
-  "tasks": ["task_a", "task_b", "task_c"],
-  "changelog": "Initial version of prompt set for all three benchmark tasks",
-  "author": "prompt_engineer",
-  "total_prompts": 3
-}
