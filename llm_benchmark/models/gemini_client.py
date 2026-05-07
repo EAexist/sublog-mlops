@@ -11,11 +11,13 @@ logger = logging.getLogger(__name__)
 class GeminiClient(LLMClient):
     """Google Gemini API client."""
 
-    def __init__(self, model_string: str, api_key: str | None = None, **kwargs: object) -> None:
-        self.model_string = model_string
+    def __init__(self, model_id: str, api_key: str | None = None, **kwargs: object) -> None:
+        self.model_id = model_id
         self._api_key = api_key
 
-    async def complete(self, prompt: str, response_model: type | None = None, config: dict[str, Any] | None = None) -> LLMResponse[Any]:
+    async def complete(
+        self, prompt: str, response_model: type | None = None, config: dict[str, Any] | None = None
+    ) -> LLMResponse[Any]:
         """Call Gemini completion API."""
         # TODO: use google-generativeai, return LLMResponse
         return LLMResponse[Any](

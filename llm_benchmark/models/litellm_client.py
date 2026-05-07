@@ -1,3 +1,4 @@
+import asyncio
 import json
 import time
 from typing import Any, TypeVar
@@ -19,9 +20,25 @@ class LiteLLMClient(LLMClient):
     Unified client using LiteLLM to support OpenAI, Anthropic, Gemini, Ollama, etc.
     """
 
-    def __init__(self, model_string: str, api_key: str | None = None):
-        self.model_string = model_string
-        self.api_key = api_key
+    def __init__(self, model_id: str):
+        self.model_id = model_id
+
+    async def enforce_rate_limit(self) -> None:
+        """
+        Enforce provider-specific rate limits before making API calls.
+
+        For Groq: 30 requests/minute = 2 seconds between requests
+        Future implementations can add other providers with their specific limits.
+        """
+        if "groq" in self.model_id:
+            # Groq rate limit: 30 requests/minute
+            # 60 seconds / 30 requests = 2 seconds per request
+            await asyncio.sleep(2.0)
+
+        # Add other provider rate limits here as needed
+        # Example:
+        # elif "openai" in self.model_id:
+        #     await asyncio.sleep(0.1)  # OpenAI has higher limits
 
     async def complete(
         self, prompt: str, response_model: type[T], config: dict[str, Any] | None = None
@@ -32,24 +49,33 @@ class LiteLLMClient(LLMClient):
         config = config or {}
         start_time = time.perf_counter()
 
-        is_groq = "groq" in self.model_string
-        actual_format = {"type": "json_object"} if is_groq else response_model
+        is_groq = "groq" in self.model_id
+        actual_format = {"type": "json_object"} if (is_groq) else response_model
+        # actual_format = response_model
 
         try:
             response = await litellm.acompletion(
-                model=self.model_string,
+                model=self.model_id,
                 messages=[{"role": "user", "content": prompt}],
-                api_key=self.api_key,
-                temperature=config.get("temperature", 0.0),
+                temperature=config.get(
+                    "temperature", 1.0 if "gemini-3.1" in self.model_id else 0.0
+                ),
                 max_tokens=config.get("max_tokens"),
                 response_format=actual_format,  # <--- Native Pydantic support
                 num_retries=10,
             )
         except BadRequestError as e:
-            print(f"\n❌ [400] Logic error on {self.model_string}: {e}")
-            raise
+            print(f"\n❌ [400] Logic error on {self.model_id}: {e}")
+            try:
+                err_json = json.loads(str(e))
+                failed = err_json.get("error", {}).get("failed_generation")
+                print("\n🧨 FAILED GENERATION:")
+                print(failed)
+            except Exception:
+                pass
+                raise
         except RateLimitError as e:
-            print(f"\n❌ [429] Rate Limit Hit on {self.model_string}: {e}")
+            print(f"\n❌ [429] Rate Limit Hit on {self.model_id}: {e}")
             raise
         except APIConnectionError as e:
             print(f"\n❌ [Connection] Failed to reach provider: {e}")

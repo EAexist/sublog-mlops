@@ -1,0 +1,11 @@
+email_categorization:
+  name: "Email Categorization"
+  description: "Categorize subscription emails into event types like SUBSCRIPTION_START_OR_PAYMENT, SUBSCRIPTION_CANCEL, or NOT_A_SUBSCRIPTION_EMAIL."
+  batch_size: 40
+  response_model: "email_categorization_v1"
+
+email_template_extraction:
+  name: "Email Template Extraction"
+  description: "Extract structured template information from subscription emails"
+  batch_size: 40
+  response_model: "email_template_extraction_v1"

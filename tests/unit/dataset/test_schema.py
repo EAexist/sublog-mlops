@@ -10,7 +10,7 @@ from datasets_shared.schema import (
     Sample,
     SubscriptionEventType,
 )
-from tests.utils.mock_dataset import create_mock_dataset
+from tests.conftest import create_mock_dataset
 
 
 def test_sample_from_example_json() -> None:
@@ -21,10 +21,10 @@ def test_sample_from_example_json() -> None:
         "templateId": "netflix-monthly-payment",
         "snippet": "Your Netflix subscription has been renewed for $15.99. Next billing date is Feb 15, 2024.",
         "subject": "Your monthly subscription has been renewed",
-        "subscription_event_type": "MONTHLY_PAYMENT",
+        "subscription_event_type": "SUBSCRIPTION_START_OR_PAYMENT",
     }
     sample = Sample.model_validate(raw)
-    assert sample.subscription_event_type == SubscriptionEventType.MONTHLY_PAYMENT
+    assert sample.subscription_event_type == SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT
     assert sample.snippet.startswith("Your Netflix")
     assert sample.subject == "Your monthly subscription has been renewed"
     assert sample.company_id == "netflix"
@@ -32,7 +32,7 @@ def test_sample_from_example_json() -> None:
     # Task A: categorize
     prompt_a = sample.get_prompt(TASK_A_CATEGORIZE)
     assert "Netflix" in prompt_a and "subscription has been renewed" in prompt_a
-    assert sample.get_expected(TASK_A_CATEGORIZE) == "MONTHLY_PAYMENT"
+    assert sample.get_expected(TASK_A_CATEGORIZE) == "SUBSCRIPTION_START_OR_PAYMENT"
 
     # Task B: extract
     prompt_b = sample.get_prompt(TASK_B_EXTRACT)
@@ -62,5 +62,8 @@ def test_dataset_roundtrip() -> None:
     js = dataset.model_dump_json()
     loaded = Dataset.model_validate_json(js)
     assert len(loaded.samples) == 1
-    assert loaded.samples[0].subscription_event_type == SubscriptionEventType.MONTHLY_PAYMENT
+    assert (
+        loaded.samples[0].subscription_event_type
+        == SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT
+    )
     assert loaded.content_hash == "mock_hash"

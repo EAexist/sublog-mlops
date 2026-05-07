@@ -1,6 +1,7 @@
-.PHONY: install airflow-up airflow-down airflow-seed benchmark-run cli-run test lint typecheck submodule-init
+.PHONY: install airflow-up airflow-down airflow-seed benchmark-run cli-run test lint typecheck submodule-init test-benchmark-local test-generate-report download-langfuse
 
 install:
+	uv lock --upgrade-package datasets-shared
 	uv sync
 
 airflow-up:
@@ -44,12 +45,39 @@ submodule-init:
 test-gen:
 	docker compose run --rm airflow-worker airflow tasks test benchmark_dag generate_dataset 2026-03-01
 
-local-gen:
+test-gen-local:
 	@uv run python -c "\
 from dags.utils.logging import setup_litellm_logging; \
 from dags.benchmark_dag import _generate_and_push_dataset; \
-setup_litellm_logging(); \
 _generate_and_push_dataset( \
     run_id='local_$(shell date +%Y%m%d_%H%M%S)', \
     ti=type('MockTI', (), {'xcom_push': lambda self, k, v: print(f'Saved {k}={v}')})() \
 )"
+
+test-benchmark-local:
+	@uv run python tests/run_local_benchmark.py "local_$$(date +%Y%m%d_%H%M%S)"
+
+test-generate-report:
+	@if [ -z "$(EXPERIMENT_ID)" ]; then \
+		echo "Usage: make test-generate-report EXPERIMENT_ID=<experiment_id>"; \
+		exit 1; \
+	fi
+	@uv run python -c "\
+from llm_benchmark.pipeline import step_generate_report; \
+import pandas as pd; \
+experiment_id='$(EXPERIMENT_ID)'; \
+result = step_generate_report(experiment_id=experiment_id, run_dir='outputs'); \
+print(f'Generated report: {result}')"
+
+download-langfuse:
+	@if [ -z "$(EXPERIMENT_ID)" ]; then \
+		echo "Usage: make download-langfuse EXPERIMENT_ID=<experiment_id>"; \
+		exit 1; \
+	fi
+	@uv run python -c "\
+import logging; \
+logging.basicConfig(level=logging.DEBUG); \
+from llm_benchmark.benchmark.loader import download_langfuse_data_to_csv; \
+experiment_id='$(EXPERIMENT_ID)'; \
+result = download_langfuse_data_to_csv(experiment_id=experiment_id); \
+print(f'Downloaded data to: {result}')"

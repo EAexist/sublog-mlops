@@ -154,14 +154,14 @@ class TestDatasetGenerator:
                 subject="Subscription Started",
                 snippet="Hello {{client_name}}, your subscription started on {{date}}.",
                 company_id="netflix",
-                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START,
+                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT,
             ),
             EmailTemplate(
                 id="test-id-2",
                 subject="Payment Received",
                 snippet="Payment of {{payment_amount}} received from {{client_name}} on {{date}}.",
                 company_id="netflix",
-                subscription_event_type=SubscriptionEventType.MONTHLY_PAYMENT,
+                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT,
             ),
         ]
 
@@ -189,7 +189,7 @@ class TestDatasetGenerator:
         assert sample.subject == "Subscription Started"
         assert "John Doe" in sample.snippet
         assert "2025-01-15" in sample.snippet
-        assert sample.subscription_event_type == SubscriptionEventType.SUBSCRIPTION_START
+        assert sample.subscription_event_type == SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT
         assert sample.company_id == "netflix"
         assert sample.template_id == "test-id-1"
 
@@ -198,7 +198,9 @@ class TestDatasetGenerator:
         assert sample2.subject == "Payment Received"
         assert "Jane Smith" in sample2.snippet
         assert "$25.99" in sample2.snippet
-        assert sample2.subscription_event_type == SubscriptionEventType.MONTHLY_PAYMENT
+        assert (
+            sample2.subscription_event_type == SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT
+        )
 
     def test_assemble_dataset_unequal_lengths(self):
         """Test assemble_dataset when templates and parameters have different lengths."""
@@ -208,21 +210,21 @@ class TestDatasetGenerator:
                 subject="Test 1",
                 snippet="Hello {{client_name}}",
                 company_id="netflix",
-                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START,
+                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT,
             ),
             EmailTemplate(
                 id="test-id-2",
                 subject="Test 2",
                 snippet="Hi {{client_name}}",
                 company_id="netflix",
-                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START,
+                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT,
             ),
             EmailTemplate(
                 id="test-id-3",
                 subject="Test 3",
                 snippet="Hey {{client_name}}",
                 company_id="netflix",
-                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START,
+                subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT,
             ),
         ]
 
@@ -243,7 +245,7 @@ class TestDatasetGenerator:
             id="test-1",
             subject="Test Subject",
             snippet="Test snippet with content",
-            subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START,
+            subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT,
             company_id="netflix",
             template_id="template-1",
         )
@@ -254,7 +256,7 @@ class TestDatasetGenerator:
             id="test-2",
             subject="",
             snippet="Test snippet",
-            subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START,
+            subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT,
             company_id="netflix",
             template_id="template-2",
         )
@@ -265,7 +267,7 @@ class TestDatasetGenerator:
             id="test-3",
             subject="Test Subject",
             snippet="",
-            subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START,
+            subscription_event_type=SubscriptionEventType.SUBSCRIPTION_START_OR_PAYMENT,
             company_id="netflix",
             template_id="template-3",
         )

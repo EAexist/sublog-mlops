@@ -56,9 +56,12 @@ def _generate_and_push_dataset(**context: Any) -> str:
 
 
 def _run_benchmarks(**context: Any) -> str:
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        step_run_benchmarks(tmp_dir)
-        return ""
+    run_dir = Path(pull_path(context, "run_benchmarks", "run_dir") or "data")
+    asyncio.run(step_run_benchmarks(run_dir=run_dir))
+    return ""
+    # with tempfile.TemporaryDirectory() as tmp_dir:
+    #     step_run_benchmarks(tmp_dir)
+    #     return ""
 
 
 def _compute_metrics(**context: Any) -> None:

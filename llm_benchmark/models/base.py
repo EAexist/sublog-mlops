@@ -10,6 +10,7 @@ from pydantic import BaseModel
 
 class ResponseFormat(Enum):
     """Response format types for LLM calls."""
+
     TEXT = "text"
     JSON = "json"
 
@@ -19,11 +20,12 @@ T = TypeVar("T", bound=BaseModel)
 
 class LLMResponse(BaseModel, Generic[T]):
     """Response from an LLM call."""
-    content: str
+
+    content: str | None = ""
     prompt_tokens: int
     completion_tokens: int
     latency_ms: float
-    parsed_data: T | None = None  # Parsed data when response_model is used
+    parsed_data: T | None = None
 
 
 class LLMClient(ABC):
@@ -31,10 +33,7 @@ class LLMClient(ABC):
 
     @abstractmethod
     async def complete(
-        self,
-        prompt: str,
-        response_model: type[T],
-        config: dict[str, Any] | None = None
+        self, prompt: str, response_model: type[T], config: dict[str, Any] | None = None
     ) -> LLMResponse[T]:
         """Return completion for the given prompt."""
         ...

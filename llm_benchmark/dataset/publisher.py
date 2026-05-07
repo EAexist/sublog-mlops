@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from pydantic import TypeAdapter
+from llm_benchmark.utils.loader import save_json, save_jsonl
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ class DatasetPublisher:
         version_dir = self.versions_dir / run_id
         file_path = version_dir / f"{self.component_name}.jsonl"
 
-        self.save_jsonl(data, file_path)
+        save_jsonl(data, file_path)
 
         # Update latest.json (The "Promotion" step)
         latest_info = {
@@ -73,35 +73,6 @@ class DatasetPublisher:
             old_dir = dirs.pop(0)
             shutil.rmtree(old_dir)
             logger.info(f"Deleted old version: {old_dir.name}")
-
-    def save_json(self, data: Any, path: Path) -> None:
-        """Persist dataset to path (e.g. JSON)."""
-        path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-        serializable_data = TypeAdapter(type(data)).dump_python(data, mode="json")
-
-        path.write_text(json.dumps(serializable_data, indent=2), encoding="utf-8")
-        logger.info("Saved dataset to %s", path)
-
-    def save_jsonl(self, data: Any, path: Path) -> None:
-        """Persist dataset to path as JSONL format (one JSON object per line)."""
-        path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-        serializable_data = TypeAdapter(type(data)).dump_python(data, mode="json")
-
-        # Handle different data types for JSONL format
-        if isinstance(serializable_data, list):
-            # Write each item as a separate JSON line
-            lines = [json.dumps(item, separators=(",", ":")) for item in serializable_data]
-            content = "\n".join(lines)
-        else:
-            # For single objects, write as one JSON line
-            content = json.dumps(serializable_data, separators=(",", ":"))
-
-        path.write_text(content, encoding="utf-8")
-        logger.info("Saved dataset to %s as JSONL", path)
 
     def save_manifest(
         self,
@@ -125,6 +96,14 @@ class DatasetPublisher:
         # Extract output_path from dataset_path (go up 3 levels: emails/versions/run_id/samples.json -> data)
         manifest_path = output_path / "runs" / run_id / "manifest.json"
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
-        self.save_json(manifest, manifest_path)
+        save_json(manifest, manifest_path)
 
         return manifest_path
+
+
+# @lru_cache
+# def get_dataset_publisher():
+#     return DatasetPublisher()
+
+
+# dataset_publisher = get_dataset_publisher()

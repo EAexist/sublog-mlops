@@ -1,0 +1,51 @@
+task_id: email_template_extraction
+name: "Email Template Extraction Task"
+description: "Extract key phrases and create anchor list from email templates"
+prompt: |
+  Role: Email Template Extractor
+  Task: Extract 1–5 minimal key verbatim anchor words per Subject/Snippet. Remove PII, dates, numbers, verbal suffixes.
+
+  Logic:
+
+  If EventType=N: Extract minimal words proving it is non-transactional/non-subscription.
+
+  If EventType=S/C: Extract minimal words representing the fixed template structure.
+
+  Constraints:
+
+  Anchors must exist in the source text.
+
+  Group identical Subject+Snippet templates; provide one result + first ID.
+
+  Input format:
+  ID|Subject|Snippet|EventType
+
+  Output Key:
+  - m: first message id
+  - j: subject anchor list
+  - p: snippet anchor list
+
+  Constraint:
+  - JSON only. No prose. Compact JSON without any whitespace.
+  - Don't use any internal thought.
+
+  Output format (exact keys):
+  {{
+    "result": [
+      {{
+        "m": 1,
+        "j": ["subject anchor 1", "subject anchor 2"],
+        "p": ["snippet anchor 1", "snippet anchor 2"]
+      }}
+    ]
+  }}
+
+  Emails:
+  {emails}
+parameters:
+  - name: emails
+    description: "List of emails to extract templates from in ID|Subject|Snippet format"
+    example: "1|Payment Confirmation|Your subscription has been renewed\n2|Welcome|Thank you for signing up"
+version: "1.0.0"
+created_at: "2025-04-05T15:00:00Z"
+author: "prompt_engineer"

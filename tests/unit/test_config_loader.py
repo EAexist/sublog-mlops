@@ -13,7 +13,7 @@ def test_load_models_config(project_root: Path) -> None:
     config = load_models_config(path)
     assert len(config.models) >= 1
     assert config.models[0].id
-    assert config.models[0].provider in ("openai", "google", "ollama")
+    assert config.models[0].provider in ("openai", "google", "ollama", "groq")
 
 
 # def test_load_dataset_config(project_root: Path) -> None:

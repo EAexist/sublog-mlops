@@ -11,11 +11,15 @@ logger = logging.getLogger(__name__)
 class OllamaClient(LLMClient):
     """Ollama local API client."""
 
-    def __init__(self, model_string: str, base_url: str = "http://localhost:11434", **kwargs: object) -> None:
-        self.model_string = model_string
+    def __init__(
+        self, model_id: str, base_url: str = "http://localhost:11434", **kwargs: object
+    ) -> None:
+        self.model_id = model_id
         self._base_url = base_url
 
-    async def complete(self, prompt: str, response_model: type | None = None, config: dict[str, Any] | None = None) -> LLMResponse[Any]:
+    async def complete(
+        self, prompt: str, response_model: type | None = None, config: dict[str, Any] | None = None
+    ) -> LLMResponse[Any]:
         """Call Ollama completion API."""
         # TODO: use httpx to call Ollama, return LLMResponse
         return LLMResponse[Any](

@@ -1,0 +1,11 @@
+{
+    "version": "1.0.0",
+    "created_at": "2025-04-05T15:00:00Z",
+    "tasks": [
+        "email_categorization",
+        "email_template_extraction"
+    ],
+    "changelog": "Initial version of email categorization and template extraction prompts",
+    "author": "prompt_engineer",
+    "total_prompts": 2
+}

@@ -40,3 +40,6 @@ logs/
 .codeiumignore
 
 *deprecated*
+
+data/*
+!data/latest/

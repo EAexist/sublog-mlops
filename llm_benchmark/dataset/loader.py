@@ -5,6 +5,7 @@ Follows the pattern: 1. Access latest.json -> 2. Follow path in latest.json to a
 """
 
 import logging
+import os
 from typing import Any
 
 from datasets import load_dataset
@@ -25,13 +26,17 @@ class HuggingFaceDatasetLoader:
             dataset_name: HuggingFace dataset name (e.g., "hyeon-expression/subscription-killer-synthetic-emails")
         """
         self.dataset_name = dataset_name
+        # Cache attributes for loaded data
+        self._templates_cache: list[EmailTemplate] | None = None
+        self._parameters_cache: list[EmailTextParameterSet] | None = None
+        self._samples_cache: list[Sample] | None = None
 
     def load_latest_file_path(self, component: str) -> str:
         """
         Step 1: Access latest.json to get the path to the latest data file.
 
         Args:
-            component: Component name (e.g., 'templates', 'parameters', 'samples')
+            component: Component name (e.g., 'templates', 'parameters', 'emails')
 
         Returns:
             Relative path to the latest data file
@@ -99,7 +104,7 @@ class HuggingFaceDatasetLoader:
         Complete double access: latest.json -> actual data file.
 
         Args:
-            component: Component name (e.g., 'templates', 'parameters', 'samples')
+            component: Component name (e.g., 'templates', 'parameters', 'emails')
             data_model: Optional Pydantic model to validate and convert data
 
         Returns:
@@ -115,16 +120,34 @@ class HuggingFaceDatasetLoader:
         return self.load_data_file(latest_file, data_model)
 
     def load_latest_templates(self) -> list[EmailTemplate]:
-        """Convenience method to load latest templates."""
-        return self.load_latest_component("templates", EmailTemplate)  # type: ignore
+        """Convenience method to load latest templates with caching."""
+        if self._templates_cache is None:
+            logger.info("Loading templates for the first time (caching)")
+            templates = self.load_latest_component("templates", EmailTemplate)
+            self._templates_cache = templates  # type: ignore
+        else:
+            logger.info("Using cached templates")
+        return self._templates_cache or []
 
     def load_latest_parameters(self) -> list[EmailTextParameterSet]:
-        """Convenience method to load latest parameters."""
-        return self.load_latest_component("parameters", EmailTextParameterSet)  # type: ignore
+        """Convenience method to load latest parameters with caching."""
+        if self._parameters_cache is None:
+            logger.info("Loading parameters for the first time (caching)")
+            parameters = self.load_latest_component("parameters", EmailTextParameterSet)
+            self._parameters_cache = parameters  # type: ignore
+        else:
+            logger.info("Using cached parameters")
+        return self._parameters_cache or []
 
     def load_latest_samples(self) -> list[Sample]:
-        """Convenience method to load latest samples."""
-        return self.load_latest_component("samples", Sample)  # type: ignore
+        """Convenience method to load latest samples with caching."""
+        if self._samples_cache is None:
+            logger.info("Loading samples for the first time (caching)")
+            samples = self.load_latest_component("emails", Sample)
+            self._samples_cache = samples  # type: ignore
+        else:
+            logger.info("Using cached samples")
+        return self._samples_cache or []
 
     def get_latest_metadata(self, component: str) -> dict[str, Any]:
         """
@@ -150,3 +173,10 @@ class HuggingFaceDatasetLoader:
         except Exception as e:
             logger.error(f"Failed to load metadata for {component}: {e}")
             raise
+
+
+# Singleton instance - use environment variable or default
+default_dataset_name = os.getenv(
+    "HF_DATASET_NAME", "hyeon-expression/subscription-killer-synthetic-emails"
+)
+dataset_loader = HuggingFaceDatasetLoader(default_dataset_name)

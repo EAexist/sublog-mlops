@@ -40,8 +40,8 @@ make airflow-seed              # Seed connections from environment
 ```bash
 make benchmark-run             # Trigger benchmark DAG via Airflow
 make cli-run                   # Run benchmark via CLI
-make test-gen                  # Test dataset generation in Airflow worker
-make local-gen                 # Generate dataset locally
+make test-gen-local            # Generate dataset locally (direct execution)
+make test-benchmark-local      # Test benchmark runner locally
 ```
 
 ## Test Structure

@@ -1,28 +1,47 @@
-# Loads + validates YAML configs via Pydantic
-
 import logging
 from pathlib import Path
+from typing import TypeVar
 
-from pydantic import BaseModel
+import yaml
+from pydantic import BaseModel, RootModel, computed_field
 
 logger = logging.getLogger(__name__)
+
+T = TypeVar("T", bound=BaseModel)
+
+
+def _load_yaml_config(path: Path, config_class: type[T]) -> T:
+    """Generic YAML config loader following the same pattern."""
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return config_class.model_validate(data)
 
 
 class ModelEntry(BaseModel):
     id: str
     provider: str
-    model_string: str
-    input_price_per_1k_tokens: float
-    output_price_per_1k_tokens: float
+
+    @computed_field
+    @property
+    def full_id(self) -> str:
+        return f"{self.provider}/{self.id}"
+
+    # input_price_per_1k_tokens: float
+    # output_price_per_1k_tokens: float
 
 
 class ModelsConfig(BaseModel):
     models: list[ModelEntry]
 
 
-class TaskConfig(BaseModel):
-    task_id: str
-    task_type: str = "task_a"  # "task_a" (categorize) or "task_b" (extract regexes)
+class TaskEntry(BaseModel):
+    name: str
+    description: str
+    batch_size: int
+    response_model: str
+
+
+class TasksConfig(RootModel[dict[str, TaskEntry]]):
+    """Configuration for task definitions."""
 
 
 class DatasetConfig(BaseModel):
@@ -31,7 +50,6 @@ class DatasetConfig(BaseModel):
     mlflow_experiment_name: str
     n_templates_per_event: int
     n_samples_per_template: int
-    tasks: list[TaskConfig]
     locales: list[str]
     do_update_templates: bool
     do_update_parameters: bool
@@ -40,17 +58,17 @@ class DatasetConfig(BaseModel):
 
 def load_models_config(path: Path | None = None) -> ModelsConfig:
     """Load and validate config/models.yaml."""
-    import yaml
-
     path = path or Path("config/models.yaml")
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return ModelsConfig.model_validate(data)
+    return _load_yaml_config(path, ModelsConfig)
+
+
+def load_tasks_config(path: Path | None = None) -> TasksConfig:
+    """Load and validate config/tasks.yml."""
+    path = path or Path("config/tasks.yml")
+    return _load_yaml_config(path, TasksConfig)
 
 
 def load_dataset_config(path: Path | None = None) -> DatasetConfig:
     """Load and validate config/dataset.yaml."""
-    import yaml
-
     path = path or Path("config/dataset.yaml")
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return DatasetConfig.model_validate(data)
+    return _load_yaml_config(path, DatasetConfig)

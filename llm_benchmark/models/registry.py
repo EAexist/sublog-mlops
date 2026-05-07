@@ -8,15 +8,18 @@ from llm_benchmark.models.base import LLMClient
 logger = logging.getLogger(__name__)
 
 
-def get_client(provider: str, model_string: str, **kwargs: Any) -> LLMClient:
+def get_client(provider: str, model_id: str, **kwargs: Any) -> LLMClient:
     """Return LLMClient for provider (openai | google | ollama)."""
     if provider == "openai":
         from llm_benchmark.models.openai_client import OpenAIClient
-        return OpenAIClient(model_string=model_string, **kwargs)
+
+        return OpenAIClient(model_id=model_id, **kwargs)
     if provider == "google":
         from llm_benchmark.models.gemini_client import GeminiClient
-        return GeminiClient(model_string=model_string, **kwargs)
+
+        return GeminiClient(model_id=model_id, **kwargs)
     if provider == "ollama":
         from llm_benchmark.models.ollama_client import OllamaClient
-        return OllamaClient(model_string=model_string, **kwargs)
+
+        return OllamaClient(model_id=model_id, **kwargs)
     raise ValueError(f"Unknown provider: {provider}")
